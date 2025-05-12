@@ -1,0 +1,160 @@
+using System;
+using System.Collections.Generic;
+
+namespace StudentGradeManagement
+{
+    class Student
+    {
+        public int RollNo { get; set; }
+        public string Name { get; set; }
+        public List<int> Marks { get; set; }
+        public double Average { get; set; }
+        public char Grade { get; set; }
+
+        public void CalculateGrade()
+        {
+            int total = 0;
+            foreach (int mark in Marks)
+                total += mark;
+
+            Average = (double)total / Marks.Count;
+
+            if (Average >= 90) Grade = 'A';
+            else if (Average >= 75) Grade = 'B';
+            else if (Average >= 60) Grade = 'C';
+            else if (Average >= 40) Grade = 'D';
+            else Grade = 'F';
+        }
+
+        public void Display()
+        {
+            Console.WriteLine($"Roll No: {RollNo}, Name: {Name}, Average: {Average:F2}, Grade: {Grade}");
+        }
+    }
+
+    class Program
+    {
+        static List<Student> students = new List<Student>();
+
+        static void Main()
+        {
+            int choice;
+            do
+            {
+                Console.WriteLine("\n==== Student Grade Management System ====");
+                Console.WriteLine("1. Add Student");
+                Console.WriteLine("2. View All Students");
+                Console.WriteLine("3. Search Student by Roll No");
+                Console.WriteLine("4. Update Student");
+                Console.WriteLine("5. Delete Student");
+                Console.WriteLine("6. Exit");
+                Console.Write("Enter your choice: ");
+                choice = int.Parse(Console.ReadLine());
+
+                switch (choice)
+                {
+                    case 1: AddStudent(); break;
+                    case 2: ViewAll(); break;
+                    case 3: SearchStudent(); break;
+                    case 4: UpdateStudent(); break;
+                    case 5: DeleteStudent(); break;
+                    case 6: Console.WriteLine("Exiting..."); break;
+                    default: Console.WriteLine("Invalid choice."); break;
+                }
+
+            } while (choice != 6);
+        }
+
+        static void AddStudent()
+        {
+            Student s = new Student();
+            Console.Write("Enter Roll No: ");
+            s.RollNo = int.Parse(Console.ReadLine());
+            Console.Write("Enter Name: ");
+            s.Name = Console.ReadLine();
+
+            Console.Write("Enter number of subjects: ");
+            int subjectCount = int.Parse(Console.ReadLine());
+            s.Marks = new List<int>();
+
+            for (int i = 0; i < subjectCount; i++)
+            {
+                Console.Write($"Enter marks for subject {i + 1}: ");
+                s.Marks.Add(int.Parse(Console.ReadLine()));
+            }
+
+            s.CalculateGrade();
+            students.Add(s);
+            Console.WriteLine("Student added successfully.");
+        }
+
+        static void ViewAll()
+        {
+            if (students.Count == 0)
+            {
+                Console.WriteLine("No student records found.");
+                return;
+            }
+
+            Console.WriteLine("\n--- Student Records ---");
+            foreach (Student s in students)
+                s.Display();
+        }
+
+        static void SearchStudent()
+        {
+            Console.Write("Enter Roll No to search: ");
+            int roll = int.Parse(Console.ReadLine());
+            Student found = students.Find(s => s.RollNo == roll);
+
+            if (found != null)
+                found.Display();
+            else
+                Console.WriteLine("Student not found.");
+        }
+
+        static void UpdateStudent()
+        {
+            Console.Write("Enter Roll No to update: ");
+            int roll = int.Parse(Console.ReadLine());
+            Student s = students.Find(st => st.RollNo == roll);
+
+            if (s == null)
+            {
+                Console.WriteLine("Student not found.");
+                return;
+            }
+
+            Console.Write("Enter new name: ");
+            s.Name = Console.ReadLine();
+
+            Console.Write("Enter new number of subjects: ");
+            int subjectCount = int.Parse(Console.ReadLine());
+            s.Marks.Clear();
+
+            for (int i = 0; i < subjectCount; i++)
+            {
+                Console.Write($"Enter marks for subject {i + 1}: ");
+                s.Marks.Add(int.Parse(Console.ReadLine()));
+            }
+
+            s.CalculateGrade();
+            Console.WriteLine("Student updated successfully.");
+        }
+
+        static void DeleteStudent()
+        {
+            Console.Write("Enter Roll No to delete: ");
+            int roll = int.Parse(Console.ReadLine());
+            Student s = students.Find(st => st.RollNo == roll);
+
+            if (s != null)
+            {
+                students.Remove(s);
+                Console.WriteLine("Student deleted.");
+            }
+            else
+                Console.WriteLine("Student not found.");
+        }
+    }
+}
